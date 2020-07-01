@@ -3,4 +3,6 @@ version:  '2.3'
 services: 
     app:
         build: .
-        container_name: app_go
+        container_name: server_go
+        ports:
+            - "80:80" 
