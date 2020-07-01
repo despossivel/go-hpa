@@ -4,15 +4,15 @@ import "testing"
 
 
 
-// func TestSoma(t *testing.T){
+func TestGreeting(t *testing.T){
 
-//     // Test []{} -> 0
-//     result := Soma(5,5)
-//     if result != 10 {
-//             t.Error(
-//                 "For input: ", []int{},
-//                 "expected:", 0,
-//                 "got:", result)
-// 	}
+    // Test []{} -> 0
+    // result := Greeting()
+    // if result != 10 {
+    //         t.Error(
+    //             "For input: ", []int{},
+    //             "expected:", 0,
+    //             "got:", result)
+	// }
 	
-// }
+}
