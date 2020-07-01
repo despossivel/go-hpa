@@ -1,0 +1,71 @@
+steps:
+  - id: "Rodando docker-compose"
+    name: "gcr.io/$PROJECT_ID/docker-compose"
+    args: ["-f", "docker-compose.cloudbuild.yml", "up", "-d", "--build"]
+
+  - id: "Building image"
+    name: "gcr.io/cloud-builders/docker"
+    args:  ["build","-t","gcr.io/$PROJECT_ID/app-go:$SHORT_SHA","-f","Dockerfile","."]
+
+  - id: "Building application"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["run", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA", "go", "build"]
+
+  - id: "Rodando teste unitário"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["run", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA", "go", "test"]
+
+  - id: "Pushing image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA"]
+
+
+  - id: "Adjustin deployment app file - k8s"
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        sed 's#despossivel/server-go-lang:beta#gcr.io/$PROJECT_ID/server-go-lang:$SHORT_SHA#g' k8s/app/deployment.yaml > k8s/deployment-new.yaml;
+
+
+  - id: "Deployment APP"
+    name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'k8s/deployment-new.yaml'] #deployment-new.yaml
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+
+  - id: "Service APP"
+    name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'k8s/service.yaml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'     
+
+  - id: "Deployment Nginx"
+    name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'k8s/nginx/'] #deployment-new.yaml
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+
+  #  - id: "Deployment Mysql"
+  #   name: 'gcr.io/cloud-builders/kubectl'
+  #   args: ['create', 'secret', 'generic', 'mysql-pass'] #deployment-new.yaml
+  #   env:
+  #     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+  #     - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+  
+
+  - id: "Deployment Mysql"
+    name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'k8s/mysql/'] #deployment-new.yaml
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
+
+# kubectl create secret generic mysql-pass --from-literal=password='1234'
+
+# sudo docker run -it --rm --name app_golang app_golang
+# sudo docker run app_golang go test

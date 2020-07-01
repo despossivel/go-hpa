@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
     name: nginx
 spec:
-    replicas: 3
+    replicas: 1
     template:
         metadata:
             labels:
@@ -15,15 +15,15 @@ spec:
                   ports:
                     - containerPort: 80
                   volumeMounts:
-                    - mountPath: /usr/share/nginx/html/
-                      name: nginx-index
+                    - mountPath: /etc/nginx/conf.d
+                      name: nginx-conf
                       readOnly: true
 
 
             volumes:
-            - name: nginx-index
-              configMap:
-                name: nginx-index
-                items:
-                - key: nginx-index
-                  path: index.html
+              - name: nginx-conf
+                configMap: 
+                  name: nginx-conf
+                  items: 
+                    - key: nginx.conf
+                      path: nginx.conf

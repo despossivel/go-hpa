@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: server
+
+spec:
+  selector:
+    matchLabels:
+      app: server
+  
+  template:
+    metadata:
+      labels:
+        app: server
+    spec:
+      containers:
+        - name: server
+          image: despossivel/server-go-lang:beta
+          ports:
+          - containerPort: 80
