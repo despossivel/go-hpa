@@ -26,33 +26,33 @@ steps:
     args:
       - '-c'
       - |
-        sed 's#despossivel/server-go-lang:beta#gcr.io/$PROJECT_ID/server-go-lang:$SHORT_SHA#g' k8s/deployment.yaml > k8s/deployment-new.yaml;
+        sed 's#despossivel/server-go-lang:beta#gcr.io/$PROJECT_ID/server-go-lang:$SHORT_SHA#g' k8s/deployment.yml > k8s/deployment-new.yml;
 
 
   - id: "Deployment APP"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/deployment-new.yaml'] #deployment-new.yaml
+    args: ['apply', '-f', 'k8s/deployment-new.yml'] #deployment-new.yml
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
 
   - id: "Service APP"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/service.yaml']
+    args: ['apply', '-f', 'k8s/service.yml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'     
 
   - id: "Deployment Nginx"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/nginx/'] #deployment-new.yaml
+    args: ['apply', '-f', 'k8s/nginx/'] #deployment-new.yml
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
 
   #  - id: "Deployment Mysql"
   #   name: 'gcr.io/cloud-builders/kubectl'
-  #   args: ['create', 'secret', 'generic', 'mysql-pass'] #deployment-new.yaml
+  #   args: ['create', 'secret', 'generic', 'mysql-pass'] #deployment-new.yml
   #   env:
   #     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
   #     - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
@@ -60,7 +60,7 @@ steps:
 
   - id: "Deployment Mysql"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/mysql/'] #deployment-new.yaml
+    args: ['apply', '-f', 'k8s/mysql/'] #deployment-new.yml
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
