@@ -5,19 +5,19 @@ steps:
 
   - id: "Building image"
     name: "gcr.io/cloud-builders/docker"
-    args:  ["build","-t","gcr.io/$PROJECT_ID/app-go:$SHORT_SHA","-f","Dockerfile","."]
+    args:  ["build","-t","gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA","-f","Dockerfile","."]
 
   - id: "Building application"
     name: "gcr.io/cloud-builders/docker"
-    args: ["run", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA", "go", "build"]
+    args: ["run", "gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA", "go", "build"]
 
   - id: "Rodando teste unitário"
     name: "gcr.io/cloud-builders/docker"
-    args: ["run", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA", "go", "test"]
+    args: ["run", "gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA", "go", "test"]
 
   - id: "Pushing image"
     name: "gcr.io/cloud-builders/docker"
-    args: ["push", "gcr.io/$PROJECT_ID/app-go:$SHORT_SHA"]
+    args: ["push", "gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA"]
 
 
   - id: "Adjustin deployment app file - k8s"
@@ -26,7 +26,7 @@ steps:
     args:
       - '-c'
       - |
-        sed 's#despossivel/server-go-lang:beta#gcr.io/$PROJECT_ID/server-go-lang:$SHORT_SHA#g' k8s/deployment.yml > k8s/deployment-new.yml;
+        sed 's#despossivel/go-hpa:beta#gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA#g' k8s/deployment.yml > k8s/deployment-new.yml;
 
 
   - id: "Deployment APP"

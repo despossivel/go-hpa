@@ -3,6 +3,6 @@ version:  '2.3'
 services: 
     app:
         build: .
-        container_name: server_go
+        container_name: go-hpa
         ports:
             - "80:80" 
