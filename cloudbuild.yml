@@ -19,7 +19,6 @@ steps:
     name: "gcr.io/cloud-builders/docker"
     args: ["push", "gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA"]
 
-
   - id: "Adjustin deployment app file - k8s"
     name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: '/bin/sh'
@@ -28,10 +27,9 @@ steps:
       - |
         sed 's#despossivel/go-hpa:beta#gcr.io/$PROJECT_ID/go-hpa:$SHORT_SHA#g' k8s/deployment.yml > k8s/deployment-new.yml;
 
-
   - id: "Deployment APP"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/deployment-new.yml'] #deployment-new.yml
+    args: ['apply', '-f', 'k8s/deployment-new.yml']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
@@ -43,29 +41,16 @@ steps:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'     
 
+  - id: "HPA APP"
+    name: 'gcr.io/cloud-builders/kubectl'
+    args: ['apply', '-f', 'k8s/hpa.yml']
+    env:
+      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
+      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'     
+
   - id: "Deployment Nginx"
     name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/nginx/'] #deployment-new.yml
+    args: ['apply', '-f', 'k8s/nginx/']
     env:
       - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
       - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
-
-  #  - id: "Deployment Mysql"
-  #   name: 'gcr.io/cloud-builders/kubectl'
-  #   args: ['create', 'secret', 'generic', 'mysql-pass'] #deployment-new.yml
-  #   env:
-  #     - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
-  #     - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
-  
-
-  - id: "Deployment Mysql"
-    name: 'gcr.io/cloud-builders/kubectl'
-    args: ['apply', '-f', 'k8s/mysql/'] #deployment-new.yml
-    env:
-      - 'CLOUDSDK_COMPUTE_ZONE=us-central1-c'
-      - 'CLOUDSDK_CONTAINER_CLUSTER=cluster-1'
-
-# kubectl create secret generic mysql-pass --from-literal=password='1234'
-
-# sudo docker run -it --rm --name app_golang app_golang
-# sudo docker run app_golang go test
